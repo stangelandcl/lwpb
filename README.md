@@ -15,6 +15,13 @@ Some distinctive things about lwpb:
 
   * lwpb supports [most features](#completeness) of the protocol buffer serialization format -- probably, all the ones you care about. :)
 
+Differences from acg/lwpb
+-------------------------
+MessageCodec doesn't take a typename. 
+Instead query for a type number later and then pass that back in to encode and decode
+The python example below has been changed to reflect this
+
+
 Python library
 --------------
 
@@ -22,9 +29,10 @@ Quick Python synopsis:
 
     from lwpb.codec import MessageCodec
 
-    codec = MessageCodec( pb2file='person.pb2', typename='example.Person' )
-    serialized = codec.encode( { 'name': 'John Doe', 'id': 1234  } )
-    deserialized = codec.decode( serialized )
+    codec = MessageCodec( pb2file='person.pb2')
+    typenum = codec.typenum('example.Person')
+    serialized = codec.encode( { 'name': 'John Doe', 'id': 1234  },typenum )
+    deserialized = codec.decode( serialized,typenum )
 
     print deserialized
 

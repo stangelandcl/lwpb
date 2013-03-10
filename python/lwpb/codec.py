@@ -1,9 +1,9 @@
 import lwpb
 
 
-class MessageCodec:
 
-  def __init__(self, typename="", pb2=None, pb2file=None, filenum=0):
+class MessageCodec:
+  def __init__(self, pb2=None, pb2file=None, filenum=0):
 
     if pb2file != "":
       pb2 = file(pb2file).read()
@@ -19,7 +19,6 @@ class MessageCodec:
     self.definition = self.decoder.decode(pb2, pb2_descriptor, pb2_type_fds)
     self.descriptor = lwpb.Descriptor(self.definition['file'][filenum])
     self.types = self.descriptor.message_types()
-    self.messagetype = self.types[typename]
 
     # Expose enumeration values as self.enums.<Name>.<Member>
 
@@ -30,12 +29,14 @@ class MessageCodec:
         setattr(enum,v['name'],v['number'])
       setattr(self.enums,e['name'],enum)
 
+  def typenum(self,typename):
+	return self.types[typename]
 
-  def encode(self, record):
-    return self.encoder.encode(record, self.descriptor, self.messagetype)
+  def encode(self, record, typenum):
+    return self.encoder.encode(record, self.descriptor, typenum)
 
-  def decode(self, data):
-    return self.decoder.decode(data, self.descriptor, self.messagetype)
+  def decode(self, data, typenum):
+    return self.decoder.decode(data, self.descriptor, typenum)
 
 
 # These are used to expose enumeration symbols and values.
